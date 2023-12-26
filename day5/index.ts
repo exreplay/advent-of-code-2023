@@ -2,7 +2,6 @@ export function part1(input: string) {
   const lines = input.trim().split("\n");
   const seeds = lines[0].split(":")[1].trim().split(" ").map(Number);
   const maps: number[][][] = [];
-  const locations = [];
   let cnt = 0;
 
   for (let i = 2; i < lines.length; i++) {
@@ -24,6 +23,8 @@ export function part1(input: string) {
     }
   }
 
+  let location: number | undefined;
+
   for (const seed of seeds) {
     let lastFound = seed;
 
@@ -38,10 +39,11 @@ export function part1(input: string) {
       }
     }
 
-    locations.push(lastFound);
+    if (!location) location = lastFound;
+    else if (lastFound < location) location = lastFound;
   }
 
-  return locations.sort((a, b) => a - b)[0];
+  return location;
 }
 
 export function part2(input: string) {
