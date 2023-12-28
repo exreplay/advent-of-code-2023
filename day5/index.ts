@@ -69,10 +69,11 @@ export function part2(input: string) {
         const overlapEnd = Math.min(seedEnd, source + range);
 
         if (overlapStart < overlapEnd) {
-          found.push([
-            overlapStart - source + destination,
-            overlapEnd - source + destination,
-          ]);
+          const sourceEnd = source + range;
+          const destinationEnd = destination + range;
+          const offset = sourceEnd - destinationEnd;
+
+          found.push([overlapStart - offset, overlapEnd - offset]);
 
           if (overlapStart > seedStart) seeds.push([seedStart, overlapStart]);
           if (seedEnd > overlapEnd) seeds.push([overlapEnd, seedEnd]);
