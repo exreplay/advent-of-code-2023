@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { part1 } from ".";
+import { part1, part2 } from ".";
 
 const input = `
 seeds: 79 14 55 13
@@ -40,5 +40,9 @@ humidity-to-location map:
 describe("day5", () => {
   it("part1", () => {
     expect(part1(input)).toEqual(35);
+  });
+
+  it("part2", () => {
+    expect(part2(input)).toEqual(46);
   });
 });
