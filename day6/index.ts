@@ -37,6 +37,34 @@ export function part1(input: string) {
   return results.reduce((acc, next) => acc * next, 1);
 }
 
+export function part2(input: string) {
+  const inputs = input
+    .trim()
+    .split("\n")
+    .map((e) => e.split(":"));
+  const maps: number[] = [];
+
+  for (let i = 0; i < inputs.length; i++) {
+    maps.push(Number(inputs[i][1].trim().replaceAll(" ", "")));
+  }
+
+  let cnt = 0;
+
+  const time = maps[0];
+  const distance = maps[1];
+
+  for (let k = time; k >= 0; k--) {
+    const timeToTravel = time - k;
+    const distanceTraveled = k * timeToTravel;
+
+    if (distanceTraveled > distance) {
+      cnt++;
+    }
+  }
+
+  return cnt;
+}
+
 if (Bun.env.NODE_ENV !== "test") {
   const [part, file] = Bun.argv.slice(2);
   const text = await Bun.file(`${import.meta.dir}/${file}`).text();
@@ -45,10 +73,9 @@ if (Bun.env.NODE_ENV !== "test") {
 
   if (part === "1") {
     console.log(part1(text));
+  } else if (part === "2") {
+    console.log(part2(text));
   }
-  // } else if (part === "2") {
-  //   console.log(part2(text));
-  // }
 
   const end = performance.now();
 
