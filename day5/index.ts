@@ -37,68 +37,90 @@ export function part1(input: string) {
 }
 
 export function part2(input: string) {
-  let blocks = input
+  let inputs = input
     .trim()
     .split("\n\n")
     .map((b) => b.split("\n"));
-  let inputs = blocks[0][0].split(":")[1].trim().split(" ").map(Number);
-
-  blocks.shift();
-
   let seeds: number[][] = [];
+  let blocks: number[][][] = [];
 
-  for (let i = 0; i < inputs.length; i += 2) {
-    seeds.push([inputs[i], inputs[i] + inputs[i + 1]]);
-  }
+  for (let i = 0; i < inputs.length; i++) {
+    if (i === 0) {
+      let tmp = inputs[i][0].split(":")[1].trim().split(" ").map(Number);
+      for (let k = 0; k < tmp.length; k += 2) {
+        seeds.push([tmp[k], tmp[k] + tmp[k + 1]]);
+      }
+    } else {
+      let tmp = [];
 
-  for (const block of blocks) {
-    const ranges = [];
-
-    for (let i = 1; i < block.length; i++) {
-      ranges.push(block[i].split(" ").map(Number));
-    }
-
-    const found: number[][] = [];
-
-    while (seeds.length > 0) {
-      let hasOverlap = false;
-      const [seedStart, seedEnd] = seeds.pop() ?? [];
-
-      for (const [destination, source, range] of ranges) {
-        const overlapStart = Math.max(seedStart, source);
-        const overlapEnd = Math.min(seedEnd, source + range);
-
-        if (overlapStart < overlapEnd) {
-          const sourceEnd = source + range;
-          const destinationEnd = destination + range;
-          const offset = sourceEnd - destinationEnd;
-
-          found.push([overlapStart - offset, overlapEnd - offset]);
-
-          if (overlapStart > seedStart) seeds.push([seedStart, overlapStart]);
-          if (seedEnd > overlapEnd) seeds.push([overlapEnd, seedEnd]);
-
-          hasOverlap = true;
-          break;
-        }
+      for (let k = 1; k < inputs[i].length; k++) {
+        tmp.push(inputs[i][k].split(" ").map(Number));
       }
 
-      if (!hasOverlap) found.push([seedStart, seedEnd]);
+      blocks.push(tmp);
     }
-
-    seeds = found;
   }
 
-  return seeds.sort((a, b) => a[0] - b[0])[0][0];
+  let locations: number[][] = [];
+
+  for (const [seedStart, seedEnd] of seeds) {
+    let results: number[][] = [];
+    let ranges: number[][] = [[seedStart, seedEnd]];
+
+    for (const block of blocks) {
+      while (ranges.length > 0) {
+        let hasOverlap = false;
+        let [seedStart, seedEnd] = ranges.pop() ?? [];
+
+        for (const [destination, source, range] of block) {
+          const overlapStart = Math.max(source, seedStart);
+          const overlapEnd = Math.min(source + range, seedEnd);
+
+          if (overlapStart < overlapEnd) {
+            const sourceEnd = source + range;
+            const offset = destination - source;
+
+            if (seedStart < source) {
+              ranges.push([seedStart, source]);
+            }
+
+            if (sourceEnd < seedEnd) {
+              ranges.push([sourceEnd, seedEnd]);
+            }
+
+            results.push([overlapStart + offset, overlapEnd + offset]);
+
+            hasOverlap = true;
+            break;
+          }
+        }
+
+        if (!hasOverlap) results.push([seedStart, seedEnd]);
+      }
+
+      ranges = results;
+      results = [];
+    }
+
+    locations.push(...ranges);
+  }
+
+  return locations.sort((a, b) => a[0] - b[0])[0][0];
 }
 
 if (Bun.env.NODE_ENV !== "test") {
   const [part, file] = Bun.argv.slice(2);
   const text = await Bun.file(`${import.meta.dir}/${file}`).text();
 
+  const start = performance.now();
+
   if (part === "1") {
     console.log(part1(text));
   } else if (part === "2") {
     console.log(part2(text));
   }
+
+  const end = performance.now();
+
+  console.log(`took ${(end - start).toFixed(2)}ms`);
 }
