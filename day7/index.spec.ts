@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { part1 } from ".";
+import { part1, part2 } from ".";
 
 const input = `
 32T3K 765
@@ -9,20 +9,12 @@ KTJJT 220
 QQQJA 483
 `;
 
-const input2 = `
-982KT 991
-74A62 265
-2T4Q6 224
-73J4K 121
-`;
-
 describe("day7", () => {
   it("part1", () => {
-    // expect(part1(input)).toEqual(6440);
-    expect(part1(input2)).toEqual(1612);
+    expect(part1(input)).toEqual(6440);
   });
 
-  // it("part2", () => {
-  //   expect(part2(input)).toEqual(71503);
-  // });
+  it("part2", () => {
+    expect(part2(input)).toEqual(5905);
+  });
 });
